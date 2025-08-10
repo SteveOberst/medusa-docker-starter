@@ -68,15 +68,15 @@ services:
       - medusa
     ports:
       - "8000:8000"
-    command: ["yarn", "dev", "-H", "0.0.0.0"]
+    command: ["sh", "-lc", "yarn install && yarn dev -H 0.0.0.0"]
     env_file:
       - ./.env
     environment:
-      MEDUSA_BACKEND_URL: ${MEDUSA_BACKEND_URL:-http://medusa:9000}
+      MEDUSA_INTERNAL_BACKEND_URL: http://medusa:9000
+      NEXT_PUBLIC_MEDUSA_BACKEND_URL: ${NEXT_PUBLIC_MEDUSA_BACKEND_URL:-http://localhost:9000}
       NEXT_PUBLIC_MEDUSA_PUBLISHABLE_KEY: ${NEXT_PUBLIC_MEDUSA_PUBLISHABLE_KEY:-pk_test}
     volumes:
       - ./storefront:/app
-      - /app/node_modules
     networks:
       - medusa_net
 
