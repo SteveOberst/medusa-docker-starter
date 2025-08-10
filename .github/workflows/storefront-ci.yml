@@ -1,0 +1,25 @@
+name: Storefront CI
+on:
+  push:
+    paths:
+      - 'storefront/**'
+      - '.github/workflows/storefront-ci.yml'
+  pull_request:
+    paths:
+      - 'storefront/**'
+      - '.github/workflows/storefront-ci.yml'
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: storefront
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 20
+      - run: corepack enable
+      - run: corepack prepare yarn@3.2.3 --activate
+      - run: yarn install --immutable || yarn install
+      - run: yarn build

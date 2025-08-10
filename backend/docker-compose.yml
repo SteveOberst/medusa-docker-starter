@@ -1,7 +1,0 @@
-# DEPRECATED: Do not use this file.
-# The backend is orchestrated from the repository root docker-compose.yml
-# Use root scripts:
-#   - Windows:   ./docker-up.ps1, ./docker-down.ps1
-#   - Linux/mac: ./docker-up.sh,  ./docker-down.sh
-version: '3.9'
-services: {}

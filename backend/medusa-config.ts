@@ -12,25 +12,19 @@ module.exports = defineConfig({
       jwtSecret: process.env.JWT_SECRET || "supersecret",
       cookieSecret: process.env.COOKIE_SECRET || "supersecret",
     },
-    databaseDriverOptions: {
-      ssl: false,
-      sslmode: "disable",
-    },
+    // In Docker dev we don't use SSL; keep options explicit
+    databaseDriverOptions: { ssl: false, sslmode: 'disable' },
   },
   modules: [
     {
       resolve: "@medusajs/cache-redis",
-      options: {
-        redisUrl: process.env.CACHE_REDIS_URL,
-      },
-  key: Modules.CACHE,
+      options: { redisUrl: process.env.CACHE_REDIS_URL || process.env.REDIS_CACHE_URL || process.env.REDIS_URL },
+      key: Modules.CACHE,
     },
     {
       resolve: "@medusajs/event-bus-redis",
-      options: {
-        redisUrl: process.env.EVENTS_REDIS_URL,
-      },
-  key: Modules.EVENT_BUS,
+      options: { redisUrl: process.env.EVENTS_REDIS_URL || process.env.REDIS_URL },
+      key: Modules.EVENT_BUS,
     },
   ],
 })
