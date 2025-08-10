@@ -65,4 +65,4 @@ jobs:
 
       - name: Tear down
         if: always()
-  run: docker compose down -v || true
+        run: docker compose down -v || true
