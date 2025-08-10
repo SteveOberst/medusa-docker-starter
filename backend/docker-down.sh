@@ -1,1 +1,1 @@
-npm run docker:down
+# Removed: use repository root ./docker-down.sh or ./docker-down.ps1

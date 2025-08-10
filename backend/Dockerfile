@@ -12,6 +12,8 @@ RUN npm install
 
 # Copy source code
 COPY . .
+# Normalize line endings and ensure start script is executable
+RUN sed -i 's/\r$//' ./start.sh && chmod +x ./start.sh
 
 # Expose the port Medusa runs on
 EXPOSE 9000

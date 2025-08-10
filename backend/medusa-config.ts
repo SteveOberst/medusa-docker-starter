@@ -1,5 +1,4 @@
-import { loadEnv, defineConfig } from '@medusajs/framework/utils'
-import { Modules } from "@medusajs/framework/utils"
+import { loadEnv, defineConfig, Modules } from '@medusajs/framework/utils'
 
 loadEnv(process.env.NODE_ENV || 'development', process.cwd())
 
@@ -17,19 +16,21 @@ module.exports = defineConfig({
       ssl: false,
       sslmode: "disable",
     },
-    modules: [
+  },
+  modules: [
     {
-      resolve: "@medusajs/medusa/cache-redis",
-      options: { 
+      resolve: "@medusajs/cache-redis",
+      options: {
         redisUrl: process.env.CACHE_REDIS_URL,
       },
+  key: Modules.CACHE,
     },
     {
-      resolve: "@medusajs/medusa/event-bus-redis",
-      options: { 
+      resolve: "@medusajs/event-bus-redis",
+      options: {
         redisUrl: process.env.EVENTS_REDIS_URL,
       },
+  key: Modules.EVENT_BUS,
     },
   ],
-  }
 })

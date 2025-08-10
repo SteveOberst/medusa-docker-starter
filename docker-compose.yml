@@ -1,0 +1,88 @@
+services:
+  # PostgreSQL Database
+  postgres:
+    image: postgres:15-alpine
+    container_name: medusa_postgres
+    restart: unless-stopped
+    environment:
+      POSTGRES_DB: ${POSTGRES_DB:-medusa-store}
+      POSTGRES_USER: ${POSTGRES_USER:-postgres}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:-postgres}
+    ports:
+      - "5432:5432"
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    networks:
+      - medusa_net
+
+  # Redis
+  redis:
+    image: redis:7-alpine
+    container_name: medusa_redis
+    restart: unless-stopped
+    ports:
+      - "6379:6379"
+    networks:
+      - medusa_net
+
+  # Medusa Backend
+  medusa:
+    build:
+      context: ./backend
+      dockerfile: Dockerfile
+    container_name: medusa_backend
+    restart: unless-stopped
+    depends_on:
+      - postgres
+      - redis
+    ports:
+      - "9000:9000"
+    command: ["sh", "-c", "sed -i 's/\\r$//' ./start.sh && chmod +x ./start.sh && ./start.sh"]
+    env_file:
+      - ./.env
+    environment:
+      DATABASE_URL: postgres://${POSTGRES_USER:-postgres}:${POSTGRES_PASSWORD:-postgres}@postgres:5432/${POSTGRES_DB:-medusa-store}
+      REDIS_URL: redis://redis:6379
+      REDIS_CACHE_URL: redis://redis:6379
+      CACHE_REDIS_URL: redis://redis:6379
+      EVENTS_REDIS_URL: redis://redis:6379
+      STORE_CORS: ${STORE_CORS:-http://localhost:3000,http://localhost:8000}
+      ADMIN_CORS: ${ADMIN_CORS:-http://localhost:7000,http://localhost:3000}
+      AUTH_CORS: ${AUTH_CORS:-http://localhost:3000}
+      JWT_SECRET: ${JWT_SECRET:-supersecret}
+      COOKIE_SECRET: ${COOKIE_SECRET:-supersecret}
+    volumes:
+      - ./backend:/server
+      - /server/node_modules
+    networks:
+      - medusa_net
+
+  # Storefront (Next.js minimal starter)
+  storefront:
+    build:
+      context: ./storefront
+      dockerfile: Dockerfile
+    container_name: medusa_storefront
+    restart: unless-stopped
+    depends_on:
+      - medusa
+    ports:
+      - "8000:8000"
+    command: ["yarn", "dev", "-H", "0.0.0.0"]
+    env_file:
+      - ./.env
+    environment:
+      MEDUSA_BACKEND_URL: ${MEDUSA_BACKEND_URL:-http://medusa:9000}
+      NEXT_PUBLIC_MEDUSA_PUBLISHABLE_KEY: ${NEXT_PUBLIC_MEDUSA_PUBLISHABLE_KEY:-pk_test}
+    volumes:
+      - ./storefront:/app
+      - /app/node_modules
+    networks:
+      - medusa_net
+
+volumes:
+  postgres_data:
+
+networks:
+  medusa_net:
+    driver: bridge
