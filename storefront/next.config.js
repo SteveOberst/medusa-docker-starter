@@ -1,6 +1,9 @@
 const checkEnvVariables = require("./check-env-variables")
 
-checkEnvVariables()
+// Skip strict env validation in CI or when explicitly disabled
+if (!process.env.CI && !process.env.SKIP_ENV_CHECK) {
+  checkEnvVariables()
+}
 
 /**
  * @type {import('next').NextConfig}

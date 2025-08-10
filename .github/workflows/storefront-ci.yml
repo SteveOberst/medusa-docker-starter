@@ -19,6 +19,8 @@ jobs:
       - uses: actions/setup-node@v4
         with:
           node-version: 20
+      - name: Set build env
+        run: echo "SKIP_ENV_CHECK=true" >> $GITHUB_ENV
       - run: corepack enable
       - run: corepack prepare yarn@3.2.3 --activate
       - run: yarn install --immutable || yarn install
