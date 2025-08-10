@@ -1,43 +1,68 @@
-# Medusa-Store: Docker Compose (backend + storefront)
+## Overview
 
-This repo now includes a root-level `docker-compose.yml` that spins up:
+One-command dev environment for Medusa v2 backend and a Next.js storefront using Docker Compose.
+
+Services:
 - PostgreSQL (5432)
 - Redis (6379)
 - Medusa backend (9000)
- - Next.js storefront (8000)
+- Next.js storefront (8000)
 
-## Quick start
+## Prerequisites
+- Docker Desktop
+- Node 20+ installed locally only if you run apps outside Docker (optional)
 
+## Setup
+1) Copy env template and customize:
 ```powershell
-# From repo root
+Copy-Item .env.template .env
+```
+
+Key vars:
+- Database: POSTGRES_DB, POSTGRES_USER, POSTGRES_PASSWORD
+- Backend: JWT_SECRET, COOKIE_SECRET, STORE_CORS, ADMIN_CORS, AUTH_CORS
+- Storefront: MEDUSA_BACKEND_URL (default http://medusa:9000 in Docker network), NEXT_PUBLIC_MEDUSA_PUBLISHABLE_KEY
+- Misc: NODE_ENV (development|production), SEED_DB (false by default)
+
+## Run
+```powershell
 docker compose up --build
 ```
 
-Then visit:
+Open:
 - Backend health: http://localhost:9000/health
 - Storefront: http://localhost:8000
 
-The storefront consumes the backend URL from `MEDUSA_BACKEND_URL` (default http://localhost:9000) and requires `NEXT_PUBLIC_MEDUSA_PUBLISHABLE_KEY`.
-
-### Notes
-- The backend service mounts `./backend` for fast dev iteration and uses your existing Dockerfile/start script.
-- The storefront is a minimal Next.js app used as a placeholder. Replace it with your real storefront if you have one.
-- Postgres credentials default to `postgres/postgres` and DB `medusa-store`. Override with env vars.
-
-## Environment variables
-
-Copy `.env.template` to `.env` at the root and adjust values as needed. Compose loads it automatically.
-
-## Helper scripts (cross-platform)
-
+## Helper scripts (Windows/macOS/Linux)
 - Windows PowerShell
-	- `./docker-up.ps1` (add `-Rebuild` to force image rebuild)
-	- `./docker-down.ps1` (add `-Prune` to also remove volumes)
-	- `./docker-restart.ps1`
+	- ./docker-up.ps1 [-Rebuild]
+	- ./docker-down.ps1 [-Prune]
+	- ./docker-restart.ps1
+- Bash
+	- ./docker-up.sh [--rebuild]
+	- ./docker-down.sh [--prune]
+	- ./docker-restart.sh
 
-- Linux/macOS
-	- `./docker-up.sh` (pass `--rebuild` to force image rebuild)
-	- `./docker-down.sh` (pass `--prune` to also remove volumes)
-	- `./docker-restart.sh`
- - Root scripts available: `docker-up.ps1`, `docker-down.ps1`, `docker-restart.ps1`.
- - Copy `.env.template` to `.env` at the root to customize variables.
+## CI/CD
+GitHub Actions run backend CI on PRs:
+- Install deps, build, run DB migrations
+- Optionally seeds if src/scripts/seed.ts exists
+- Starts backend and waits for readiness
+
+Workflows:
+- .github/workflows/test-cli.yml
+- .github/workflows/update-preview-deps*.yml (on-demand dep bumps)
+
+## Production notes
+- For production, run the backend with NODE_ENV=production to build and start the compiled server.
+- Consider a multi-stage Dockerfile for the storefront to prebuild and serve with next start.
+- Use strong JWT_SECRET and COOKIE_SECRET; set publishable keys via secrets.
+
+## Troubleshooting
+- Script perms inside containers: backend startup normalizes CRLF and chmod +x start.sh.
+- Port conflicts: change published ports in docker-compose.yml.
+- Storefront 404s: ensure NEXT_PUBLIC_MEDUSA_PUBLISHABLE_KEY is set and MEDUSA_BACKEND_URL is reachable from the container.
+
+## Contributing
+- Keep env secrets out of the repo (.env is gitignored).
+- Prefer small PRs and include a brief description and testing notes.

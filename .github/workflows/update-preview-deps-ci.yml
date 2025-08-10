@@ -12,11 +12,11 @@ jobs:
           access_token: ${{ github.token }}
 
       - name: Checkout
-        uses: actions/checkout@v2.3.5
+        uses: actions/checkout@v4
         with:
           ref: 'ci'
 
-      - name: Setup Node.js 20
+  - name: Setup Node.js 20
         uses: actions/setup-node@v3
         with:
           node-version: 20
@@ -54,7 +54,7 @@ jobs:
           OWNER: ${{ github.repository_owner }}
           REPO: ${{ github.event.repository.name }}
 
-      - name: Open PR with changes
+    - name: Open PR with changes
         uses: peter-evans/create-pull-request@v5
         with:
           title: "chore(ci): updated preview dependencies [automated]"
@@ -62,7 +62,7 @@ jobs:
           body: "This PR updates preview dependencies to the latest versions."
           branch: "chore/update-preview"
           branch-suffix: "timestamp"
-          token: ${{ secrets.PAT_TOKEN }}
+      token: ${{ secrets.PAT_TOKEN || github.token }}
           base: "ci"
           add-paths: yarn.lock
           committer: "GitHub <noreply@github.com>"

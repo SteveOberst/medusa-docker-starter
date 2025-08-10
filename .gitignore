@@ -1,28 +1,45 @@
-/dist
+# Build outputs
+dist
+build
+.cache
+.medusa
+**/.next
+**/out
+
+# Environment files
 .env
 .env.*
 !.env.template
-.DS_Store
-/uploads
-/node_modules
+storefront/.env
+storefront/.env.*
+!storefront/.env.template
+
+# Dependencies
+node_modules
+**/node_modules
 yarn-error.log
+storefront/.pnp.cjs
+storefront/.pnp.loader.mjs
 
+# OS/editor files
+.DS_Store
 .idea
+.vscode/*
+!.vscode/tasks.json
+!.vscode/extensions.json
 
-coverage
-
-!src/**
-
+# TypeScript build info
+tsconfig.tsbuildinfo
 ./tsconfig.tsbuildinfo
-medusa-db.sql
-build
-.cache
 
+# App data & uploads
+uploads
+medusa-db.sql
+
+# Yarn berry internals (keep select folders)
 .yarn/*
 !.yarn/patches
 !.yarn/plugins
 !.yarn/releases
 !.yarn/sdks
 !.yarn/versions
-
-.medusa
