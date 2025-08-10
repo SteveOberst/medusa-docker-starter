@@ -21,7 +21,9 @@ Copy-Item .env.template .env
 Key vars:
 - Database: POSTGRES_DB, POSTGRES_USER, POSTGRES_PASSWORD
 - Backend: JWT_SECRET, COOKIE_SECRET, STORE_CORS, ADMIN_CORS, AUTH_CORS
-- Storefront: MEDUSA_BACKEND_URL (default http://medusa:9000 in Docker network), NEXT_PUBLIC_MEDUSA_PUBLISHABLE_KEY
+- Storefront (browser): NEXT_PUBLIC_MEDUSA_BACKEND_URL (defaults to http://localhost:9000)
+- Storefront (server/SSR/middleware): MEDUSA_INTERNAL_BACKEND_URL is injected by docker-compose (http://medusa:9000). Do not set MEDUSA_BACKEND_URL in .env.
+- Optional: NEXT_PUBLIC_MEDUSA_PUBLISHABLE_KEY (required for dynamic pages hitting the backend in the browser)
 - Misc: NODE_ENV (development|production), SEED_DB (false by default)
 
 ## Run
@@ -44,14 +46,15 @@ Open:
 	- ./docker-restart.sh
 
 ## CI/CD
-GitHub Actions run backend CI on PRs:
-- Install deps, build, run DB migrations
-- Optionally seeds if src/scripts/seed.ts exists
-- Starts backend and waits for readiness
+Single smoke test workflow ensures Docker stack boots and responds:
+- .github/workflows/compose-smoke.yml
+	- Creates a minimal .env for the runner
+	- Builds and starts docker compose
+	- Waits for backend /health (http://localhost:9000/health)
+	- Pings storefront static asset (http://localhost:8000/favicon.ico) to bypass middleware and publishable key
+	- Dumps logs on failure and tears down
 
-Workflows:
-- .github/workflows/test-cli.yml
-- .github/workflows/update-preview-deps*.yml (on-demand dep bumps)
+Dependabot is kept for automated dependency checks.
 
 ## Production notes
 - For production, run the backend with NODE_ENV=production to build and start the compiled server.
@@ -61,7 +64,9 @@ Workflows:
 ## Troubleshooting
 - Script perms inside containers: backend startup normalizes CRLF and chmod +x start.sh.
 - Port conflicts: change published ports in docker-compose.yml.
-- Storefront 404s: ensure NEXT_PUBLIC_MEDUSA_PUBLISHABLE_KEY is set and MEDUSA_BACKEND_URL is reachable from the container.
+- Admin redirecting to medusa:9000: remove MEDUSA_BACKEND_URL from .env; the browser must use NEXT_PUBLIC_MEDUSA_BACKEND_URL (localhost). Internal networking is handled via MEDUSA_INTERNAL_BACKEND_URL in docker-compose.
+- Storefront empty data: add at least one Region and link it to a Sales Channel; set NEXT_PUBLIC_MEDUSA_PUBLISHABLE_KEY with access to that channel.
+- CI missing .env: the smoke workflow creates it automatically; if running manually, create .env first.
 
 ## Contributing
 - Keep env secrets out of the repo (.env is gitignored).
