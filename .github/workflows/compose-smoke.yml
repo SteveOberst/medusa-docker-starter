@@ -48,14 +48,17 @@ jobs:
             if [ "$code" = "200" ]; then echo "Backend healthy"; exit 0; fi
             sleep 5
           done
-          echo "Backend health check failed"; docker compose logs medusa_backend; exit 1
+          echo "Backend health check failed"; docker compose logs medusa || true; exit 1
 
-      - name: Ping storefront root
+      - name: Wait for storefront
         shell: bash
         run: |
-          code=$(curl -s -o /dev/null -w "%{http_code}" http://localhost:8000 || true)
-          if [ "$code" -lt 400 ]; then exit 0; fi
-          echo "Storefront not responding"; docker compose logs medusa_storefront; exit 1
+          for i in {1..60}; do
+            code=$(curl -s -o /dev/null -w "%{http_code}" http://localhost:8000 || true)
+            if [ "$code" -lt 400 ] && [ -n "$code" ]; then echo "Storefront responding ($code)"; exit 0; fi
+            sleep 3
+          done
+          echo "Storefront not responding"; docker compose logs storefront || true; exit 1
 
       - name: Dump service logs on failure
         if: failure()
