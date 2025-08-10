@@ -53,8 +53,9 @@ jobs:
       - name: Wait for storefront
         shell: bash
         run: |
-          for i in {1..60}; do
-            code=$(curl -s -o /dev/null -w "%{http_code}" http://localhost:8000 || true)
+          for i in {1..90}; do
+            # Hit a static asset to bypass middleware (no publishable key needed)
+            code=$(curl -s -o /dev/null -w "%{http_code}" http://localhost:8000/favicon.ico || true)
             if [ "$code" -lt 400 ] && [ -n "$code" ]; then echo "Storefront responding ($code)"; exit 0; fi
             sleep 3
           done
