@@ -23,5 +23,8 @@ jobs:
         run: echo "SKIP_ENV_CHECK=true" >> $GITHUB_ENV
       - run: corepack enable
       - run: corepack prepare yarn@3.2.3 --activate
-      - run: yarn install --immutable || yarn install
-      - run: yarn build
+  - run: yarn install --immutable || yarn install
+  # Skip Next.js production build in CI to avoid build-time data fetching to Medusa
+  # Run static checks instead
+  - run: yarn lint
+  - run: yarn tsc -p tsconfig.json --noEmit
