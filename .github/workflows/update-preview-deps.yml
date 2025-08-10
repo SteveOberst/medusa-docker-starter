@@ -60,7 +60,7 @@ jobs:
           commit-message: "chore(master): updated preview dependencies [automated]"
           branch: "chore/update-preview"
           branch-suffix: "timestamp"
-        # Use PAT if provided, otherwise fall back to GITHUB_TOKEN with reduced permissions
+          # Use PAT if provided, otherwise fall back to GITHUB_TOKEN with reduced permissions
           token: ${{ secrets.PAT_TOKEN || github.token }}
           base: "master"
           add-paths: yarn.lock
