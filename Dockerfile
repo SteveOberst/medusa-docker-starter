@@ -16,5 +16,5 @@ COPY . .
 # Expose the port Medusa runs on
 EXPOSE 9000
 
-# Start with migrations and then the development server
+# Start with migrations and then the server
 CMD ["./start.sh"]
