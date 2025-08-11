@@ -38,9 +38,24 @@ function Reset-Dir($path) {
   New-Item -ItemType Directory -Path $path | Out-Null
 }
 
-# Backend: use current backend as baseline (or optionally scaffold a fresh one in the future)
+# Backend: reset and initialize using Medusa create tool (configurable via BACKEND_INIT_CMD in .env)
 Write-Host "Preparing backend directory: $BackendDir"
-# For now we don't delete backend; users can refresh it manually if desired
+Reset-Dir $BackendDir
+
+function Initialize-Backend([string]$dir) {
+  $cmdTemplate = if ($env:BACKEND_INIT_CMD) { $env:BACKEND_INIT_CMD } else { 'npx @medusajs/create-medusa-app@latest {dir}' }
+  if ($cmdTemplate -like '*{dir}*') {
+    $cmd = $cmdTemplate -replace '\{dir\}', [Regex]::Escape($dir)
+    # Above escapes the replacement; use simple replace to preserve cmd formatting
+    $cmd = $cmdTemplate.Replace('{dir}', $dir)
+  } else {
+    $cmd = "$cmdTemplate $dir"
+  }
+  Write-Host "Initializing backend using: $cmd"
+  Invoke-Expression $cmd
+}
+
+Initialize-Backend $BackendDir
 
 # Storefront: clone starter (or custom repo)
 Write-Host "Bootstrapping storefront from $StorefrontRepo@$StorefrontRef into $StorefrontDir"

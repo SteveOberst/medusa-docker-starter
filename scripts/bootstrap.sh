@@ -26,7 +26,21 @@ reset_dir() {
 }
 
 echo "Preparing backend directory: $BACKEND_DIR"
-# Keeping existing backend; consider scaffold via medusa CLI if needed
+# Initialize backend using Medusa create tool (configurable via BACKEND_INIT_CMD in .env)
+init_backend() {
+  local cmd_template=${BACKEND_INIT_CMD:-"npx @medusajs/create-medusa-app@latest {dir}"}
+  local cmd="$cmd_template"
+  if [[ "$cmd" == *"{dir}"* ]]; then
+    cmd="${cmd//\{dir\}/$BACKEND_DIR}"
+  else
+    cmd+=" $BACKEND_DIR"
+  fi
+  echo "Initializing backend using: $cmd"
+  eval "$cmd"
+}
+
+reset_dir "$BACKEND_DIR"
+init_backend
 
 echo "Bootstrapping storefront from ${STOREFRONT_REPO}@${STOREFRONT_REF} into ${STOREFRONT_DIR}"
 reset_dir "$STOREFRONT_DIR"

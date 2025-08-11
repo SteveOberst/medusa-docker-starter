@@ -46,7 +46,7 @@ STOREFRONT_REF="main" \
 
 What the bootstrap does
 - Clones the storefront into storefront/ (resets that folder)
-- Copies our patches from patch/backend into backend/
+- Initializes a fresh Medusa backend in backend/ using Medusa's create tool (configurable)
 - Copies our patches from patch/storefront into storefront/
 - Creates .env from .env.template at the repo root if missing
 
@@ -67,6 +67,7 @@ Bootstrap configuration in .env (optional):
 - STOREFRONT_REPO: Git URL for the storefront to clone (defaults to Medusa starter)
 - STOREFRONT_REF: Branch/tag to checkout (defaults to main)
 - BACKEND_DIR, STOREFRONT_DIR: target folders (default backend, storefront)
+- BACKEND_INIT_CMD: command template to initialize the backend (default uses npx @medusajs/create-medusa-app@latest {dir})
 
 ## Run
 ```powershell
