@@ -2,7 +2,9 @@ param(
   [string]$BackendDir = "backend",
   [string]$StorefrontDir = "storefront",
   [string]$StorefrontRepo = "https://github.com/medusajs/nextjs-starter-medusa",
-  [string]$StorefrontRef = "main"
+  [string]$StorefrontRef = "main",
+  [string]$BackendRepo = "https://github.com/medusajs/medusa-starter-default",
+  [string]$BackendRef = "main"
 )
 
 $ErrorActionPreference = "Stop"
@@ -31,6 +33,8 @@ if (Test-Path ".env" -PathType Leaf) {
   if (-not $PSBoundParameters.ContainsKey('StorefrontDir') -and $env:STOREFRONT_DIR) { $StorefrontDir = $env:STOREFRONT_DIR }
   if (-not $PSBoundParameters.ContainsKey('StorefrontRepo') -and $env:STOREFRONT_REPO) { $StorefrontRepo = $env:STOREFRONT_REPO }
   if (-not $PSBoundParameters.ContainsKey('StorefrontRef') -and $env:STOREFRONT_REF) { $StorefrontRef = $env:STOREFRONT_REF }
+  if (-not $PSBoundParameters.ContainsKey('BackendRepo') -and $env:BACKEND_REPO) { $BackendRepo = $env:BACKEND_REPO }
+  if (-not $PSBoundParameters.ContainsKey('BackendRef') -and $env:BACKEND_REF) { $BackendRef = $env:BACKEND_REF }
 }
 
 function Reset-Dir($path) {
@@ -38,24 +42,22 @@ function Reset-Dir($path) {
   New-Item -ItemType Directory -Path $path | Out-Null
 }
 
-# Backend: reset and initialize using Medusa create tool (configurable via BACKEND_INIT_CMD in .env)
+# Backend: reset and either clone starter repo or initialize using create tool
 Write-Host "Preparing backend directory: $BackendDir"
 Reset-Dir $BackendDir
-
-function Initialize-Backend([string]$dir) {
-  $cmdTemplate = if ($env:BACKEND_INIT_CMD) { $env:BACKEND_INIT_CMD } else { 'npx @medusajs/create-medusa-app@latest {dir}' }
-  if ($cmdTemplate -like '*{dir}*') {
-    $cmd = $cmdTemplate -replace '\{dir\}', [Regex]::Escape($dir)
-    # Above escapes the replacement; use simple replace to preserve cmd formatting
-    $cmd = $cmdTemplate.Replace('{dir}', $dir)
-  } else {
-    $cmd = "$cmdTemplate $dir"
+if ($BackendRepo) {
+  Write-Host "Cloning backend from $BackendRepo@$BackendRef into $BackendDir"
+  git clone --depth 1 --branch $BackendRef $BackendRepo $BackendDir
+  if (-not $?) { throw "Failed to clone backend" }
+} else {
+  function Initialize-Backend([string]$dir) {
+    $cmdTemplate = if ($env:BACKEND_INIT_CMD) { $env:BACKEND_INIT_CMD } else { 'npx create-medusa-app@latest {dir}' }
+    if ($cmdTemplate -like '*{dir}*') { $cmd = $cmdTemplate.Replace('{dir}', $dir) } else { $cmd = "$cmdTemplate $dir" }
+    Write-Host "Initializing backend using: $cmd"
+    Invoke-Expression $cmd
   }
-  Write-Host "Initializing backend using: $cmd"
-  Invoke-Expression $cmd
+  Initialize-Backend $BackendDir
 }
-
-Initialize-Backend $BackendDir
 
 # Storefront: clone starter (or custom repo)
 Write-Host "Bootstrapping storefront from $StorefrontRepo@$StorefrontRef into $StorefrontDir"
