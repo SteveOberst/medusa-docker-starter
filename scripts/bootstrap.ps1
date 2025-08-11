@@ -7,6 +7,27 @@ param(
 
 $ErrorActionPreference = "Stop"
 
+# Load .env if present so users can configure without passing parameters
+if (Test-Path ".env" -PathType Leaf) {
+  Get-Content ".env" | ForEach-Object {
+    if (-not $_ -or $_.Trim().StartsWith('#')) { return }
+    if ($_ -match '^[^=]+=.+') {
+      $parts = $_ -split '=', 2
+      $key = $parts[0].Trim()
+      $val = $parts[1]
+      # strip optional surrounding quotes
+      if ($val.StartsWith('"') -and $val.EndsWith('"')) { $val = $val.Trim('"') }
+      elseif ($val.StartsWith("'") -and $val.EndsWith("'")) { $val = $val.Trim("'") }
+      $env:$key = $val
+    }
+  }
+  # Override defaults with env vars only if parameters were not explicitly provided
+  if (-not $PSBoundParameters.ContainsKey('BackendDir') -and $env:BACKEND_DIR) { $BackendDir = $env:BACKEND_DIR }
+  if (-not $PSBoundParameters.ContainsKey('StorefrontDir') -and $env:STOREFRONT_DIR) { $StorefrontDir = $env:STOREFRONT_DIR }
+  if (-not $PSBoundParameters.ContainsKey('StorefrontRepo') -and $env:STOREFRONT_REPO) { $StorefrontRepo = $env:STOREFRONT_REPO }
+  if (-not $PSBoundParameters.ContainsKey('StorefrontRef') -and $env:STOREFRONT_REF) { $StorefrontRef = $env:STOREFRONT_REF }
+}
+
 function Reset-Dir($path) {
   if (Test-Path $path) { Remove-Item -Recurse -Force $path }
   New-Item -ItemType Directory -Path $path | Out-Null

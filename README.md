@@ -29,6 +29,7 @@ Windows PowerShell
 
 # custom storefront repo and branch/tag
 ./scripts/bootstrap.ps1 -StorefrontRepo "https://github.com/your-org/your-nextjs-storefront" -StorefrontRef "main"
+# alternatively, set STOREFRONT_REPO/STOREFRONT_REF in .env and just run ./scripts/bootstrap.ps1
 ```
 
 macOS/Linux (Bash)
@@ -40,6 +41,7 @@ macOS/Linux (Bash)
 STOREFRONT_REPO="https://github.com/your-org/your-nextjs-storefront" \
 STOREFRONT_REF="main" \
 ./scripts/bootstrap.sh
+# alternatively, set STOREFRONT_REPO/STOREFRONT_REF in .env and just run ./scripts/bootstrap.sh
 ```
 
 What the bootstrap does
@@ -55,6 +57,11 @@ Key vars:
 - Storefront (server/SSR/middleware): MEDUSA_INTERNAL_BACKEND_URL is injected by docker-compose (http://medusa:9000). Do not set MEDUSA_BACKEND_URL in .env.
 - Optional: NEXT_PUBLIC_MEDUSA_PUBLISHABLE_KEY (required for dynamic pages hitting the backend in the browser)
 - Misc: NODE_ENV (development|production), SEED_DB (false by default)
+
+Bootstrap configuration in .env (optional):
+- STOREFRONT_REPO: Git URL for the storefront to clone (defaults to Medusa starter)
+- STOREFRONT_REF: Branch/tag to checkout (defaults to master)
+- BACKEND_DIR, STOREFRONT_DIR: target folders (default backend, storefront)
 
 ## Run
 ```powershell

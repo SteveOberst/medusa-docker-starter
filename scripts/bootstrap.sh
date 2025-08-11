@@ -1,6 +1,14 @@
 #!/usr/bin/env bash
 set -euo pipefail
 
+# Load .env if present to allow configuring STOREFRONT_REPO/REF and dirs without shell exports
+if [[ -f ".env" ]]; then
+  set -a
+  # shellcheck disable=SC1091
+  source ./.env
+  set +a
+fi
+
 BACKEND_DIR=${BACKEND_DIR:-backend}
 STOREFRONT_DIR=${STOREFRONT_DIR:-storefront}
 STOREFRONT_REPO=${STOREFRONT_REPO:-https://github.com/medusajs/nextjs-starter-medusa}
