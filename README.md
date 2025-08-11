@@ -13,10 +13,40 @@ Services:
 - Node 20+ installed locally only if you run apps outside Docker (optional)
 
 ## Setup
-1) Copy env template and customize:
+This repo ships with empty backend/ and storefront/ folders on purpose. Use the bootstrap scripts to scaffold a fresh Medusa storefront and apply our Docker/config patches.
+
+1) Copy env template and customize (the bootstrap scripts will do this automatically):
 ```powershell
 Copy-Item .env.template .env
 ```
+
+2) Bootstrap the apps to populate storefront/ and apply patches to both apps
+
+Windows PowerShell
+```powershell
+# default Medusa starter
+./scripts/bootstrap.ps1
+
+# custom storefront repo and branch/tag
+./scripts/bootstrap.ps1 -StorefrontRepo "https://github.com/your-org/your-nextjs-storefront" -StorefrontRef "main"
+```
+
+macOS/Linux (Bash)
+```bash
+# default Medusa starter
+./scripts/bootstrap.sh
+
+# custom storefront repo and branch/tag
+STOREFRONT_REPO="https://github.com/your-org/your-nextjs-storefront" \
+STOREFRONT_REF="main" \
+./scripts/bootstrap.sh
+```
+
+What the bootstrap does
+- Clones the storefront into storefront/ (resets that folder)
+- Copies our patches from patch/backend into backend/
+- Copies our patches from patch/storefront into storefront/
+- Creates .env from .env.template at the repo root if missing
 
 Key vars:
 - Database: POSTGRES_DB, POSTGRES_USER, POSTGRES_PASSWORD
@@ -45,6 +75,18 @@ Open:
 	- ./docker-down.sh [--prune]
 	- ./docker-restart.sh
 
+Apply patches only (if you already have apps):
+
+- Windows
+```powershell
+./scripts/apply-patches.ps1
+```
+
+- macOS/Linux
+```bash
+./scripts/apply-patches.sh
+```
+
 ## CI/CD
 Single smoke test workflow ensures Docker stack boots and responds:
 - .github/workflows/compose-smoke.yml
@@ -67,6 +109,10 @@ Dependabot is kept for automated dependency checks.
 - Admin redirecting to medusa:9000: remove MEDUSA_BACKEND_URL from .env; the browser must use NEXT_PUBLIC_MEDUSA_BACKEND_URL (localhost). Internal networking is handled via MEDUSA_INTERNAL_BACKEND_URL in docker-compose.
 - Storefront empty data: add at least one Region and link it to a Sales Channel; set NEXT_PUBLIC_MEDUSA_PUBLISHABLE_KEY with access to that channel.
 - CI missing .env: the smoke workflow creates it automatically; if running manually, create .env first.
+
+## Repo layout notes
+- backend/ and storefront/ are initially empty; the bootstrap will populate them.
+- Our Dockerfiles and config live under patch/backend and patch/storefront and are applied on top of upstream starters. This keeps upgrades simple.
 
 ## Contributing
 - Keep env secrets out of the repo (.env is gitignored).

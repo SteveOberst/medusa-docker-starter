@@ -73,6 +73,7 @@ services:
       - ./.env
     environment:
       MEDUSA_INTERNAL_BACKEND_URL: http://medusa:9000
+      MEDUSA_BACKEND_URL: http://medusa:9000
       NEXT_PUBLIC_MEDUSA_BACKEND_URL: ${NEXT_PUBLIC_MEDUSA_BACKEND_URL:-http://localhost:9000}
       NEXT_PUBLIC_MEDUSA_PUBLISHABLE_KEY: ${NEXT_PUBLIC_MEDUSA_PUBLISHABLE_KEY:-pk_test}
     volumes:

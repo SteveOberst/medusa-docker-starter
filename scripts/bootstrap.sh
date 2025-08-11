@@ -1,0 +1,31 @@
+#!/usr/bin/env bash
+set -euo pipefail
+
+BACKEND_DIR=${BACKEND_DIR:-backend}
+STOREFRONT_DIR=${STOREFRONT_DIR:-storefront}
+STOREFRONT_REPO=${STOREFRONT_REPO:-https://github.com/medusajs/nextjs-starter-medusa}
+STOREFRONT_REF=${STOREFRONT_REF:-master}
+
+reset_dir() {
+  local path=$1
+  rm -rf "$path"
+  mkdir -p "$path"
+}
+
+echo "Preparing backend directory: $BACKEND_DIR"
+# Keeping existing backend; consider scaffold via medusa CLI if needed
+
+echo "Bootstrapping storefront from ${STOREFRONT_REPO}@${STOREFRONT_REF} into ${STOREFRONT_DIR}"
+reset_dir "$STOREFRONT_DIR"
+
+git clone --depth 1 --branch "$STOREFRONT_REF" "$STOREFRONT_REPO" "$STOREFRONT_DIR"
+
+./scripts/apply-patches.sh "$BACKEND_DIR" "$STOREFRONT_DIR"
+
+# Ensure .env exists based on .env.template if present
+if [[ -f ".env.template" && ! -f ".env" ]]; then
+  cp .env.template .env
+  echo "Created .env from .env.template"
+fi
+
+echo "Bootstrap complete. Run: docker compose up --build"
