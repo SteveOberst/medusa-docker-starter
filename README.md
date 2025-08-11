@@ -50,6 +50,11 @@ What the bootstrap does
 - Copies our patches from patch/storefront into storefront/
 - Creates .env from .env.template at the repo root if missing
 
+Important: generate a publishable API key
+- After bootstrapping, create at least one Region and Sales Channel in your Medusa backend.
+- Generate a Publishable API Key for that Sales Channel and set it in your .env as NEXT_PUBLIC_MEDUSA_PUBLISHABLE_KEY.
+- Without this key, most dynamic storefront pages will return empty data.
+
 Key vars:
 - Database: POSTGRES_DB, POSTGRES_USER, POSTGRES_PASSWORD
 - Backend: JWT_SECRET, COOKIE_SECRET, STORE_CORS, ADMIN_CORS, AUTH_CORS
