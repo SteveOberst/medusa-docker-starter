@@ -9,7 +9,9 @@ Services:
 - Next.js storefront (8000)
 
 ## Prerequisites
-- Docker Desktop
+- Docker and Docker Compose v2
+	- Windows/macOS: Docker Desktop includes Compose v2
+	- Linux: Docker Engine + docker-compose-plugin (Compose v2)
 - Node 20+ installed locally only if you run apps outside Docker (optional)
 
 ## Setup
@@ -70,6 +72,28 @@ Important: generate a publishable API key
 
 - Without this key, most dynamic storefront pages will return empty data.
 
+Step-by-step with screenshots
+
+1) Log in to the Admin at http://localhost:9000/app
+
+	![Admin login](images/instructions_create_key/admin-login.png)
+
+2) Go to Settings
+
+	![Go to Settings](images/instructions_create_key/goto-settings.png)
+
+3) Open Publishable Keys
+
+	![Publishable Keys](images/instructions_create_key/goto-publishable-keys.png)
+
+4) If a "Webshop" key already exists, click to copy it and use that key. Otherwise, create a new key.
+
+	![Create new key](images/instructions_create_key/create-new-key.png)
+
+5) Click the key to copy it and paste into your .env as `NEXT_PUBLIC_MEDUSA_PUBLISHABLE_KEY`.
+
+	![Click key to copy](images/instructions_create_key/click-key-to-copy.png)
+
 Key vars:
 - Database: POSTGRES_DB, POSTGRES_USER, POSTGRES_PASSWORD
 - Backend: JWT_SECRET, COOKIE_SECRET, STORE_CORS, ADMIN_CORS, AUTH_CORS
@@ -92,7 +116,16 @@ docker compose up --build
 
 Open:
 - Backend health: http://localhost:9000/health
+- Admin panel: http://localhost:9000/app
 - Storefront: http://localhost:8000
+
+Note on first run: the storefront needs 1–2 minutes to warm up (install/build) on initial boot. During this time, requests may return empty data even if the backend is healthy. Give it a minute and check container logs before debugging.
+
+Storefront preview
+
+![Default storefront](images/default-storefront.png)
+
+![Products grid](images/storefront-products.png)
 
 ## Helper scripts (Windows/macOS/Linux)
 - Windows (cmd)
@@ -137,6 +170,7 @@ Dependabot is kept for automated dependency checks.
 - Port conflicts: change published ports in docker-compose.yml.
 - Admin redirecting to medusa:9000: remove MEDUSA_BACKEND_URL from .env; the browser must use NEXT_PUBLIC_MEDUSA_BACKEND_URL (localhost). Internal networking is handled via MEDUSA_INTERNAL_BACKEND_URL in docker-compose.
 - Storefront empty data: add at least one Region and link it to a Sales Channel; set NEXT_PUBLIC_MEDUSA_PUBLISHABLE_KEY with access to that channel.
+- Storefront first run is slow: the initial Next.js build can take 1–2 minutes; until then, some pages return empty data. Wait for the storefront logs to show it’s ready.
 - CI missing .env: the smoke workflow creates it automatically; if running manually, create .env first.
 - Backend build fails copying package-lock.json: Our backend Dockerfile now copies the full context and installs based on the detected lockfile (npm/yarn/pnpm). Ensure the backend directory contains a package.json and one of the lockfiles.
 - Backend init E404: If you see an npm 404 for @medusajs/create-medusa-app, use the unscoped package. The default BACKEND_INIT_CMD uses "npx create-medusa-app@latest {dir}".
