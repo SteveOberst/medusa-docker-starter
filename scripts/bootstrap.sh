@@ -19,7 +19,7 @@ STOREFRONT_DIR=${STOREFRONT_DIR:-storefront}
 STOREFRONT_REPO=${STOREFRONT_REPO:-https://github.com/medusajs/nextjs-starter-medusa}
 STOREFRONT_REF=${STOREFRONT_REF:-main}
 BACKEND_REPO=${BACKEND_REPO:-https://github.com/medusajs/medusa-starter-default}
-BACKEND_REF=${BACKEND_REF:-main}
+BACKEND_REF=${BACKEND_REF:-master}
 
 reset_dir() {
   local path=$1

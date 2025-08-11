@@ -4,7 +4,7 @@ param(
   [string]$StorefrontRepo = "https://github.com/medusajs/nextjs-starter-medusa",
   [string]$StorefrontRef = "main",
   [string]$BackendRepo = "https://github.com/medusajs/medusa-starter-default",
-  [string]$BackendRef = "main"
+  [string]$BackendRef = "master"
 )
 
 $ErrorActionPreference = "Stop"

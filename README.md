@@ -69,7 +69,7 @@ Bootstrap configuration in .env (optional):
 - STOREFRONT_REPO: Git URL for the storefront to clone (defaults to Medusa starter)
 - STOREFRONT_REF: Branch/tag to checkout (defaults to main)
 - BACKEND_DIR, STOREFRONT_DIR: target folders (default backend, storefront)
-- BACKEND_REPO, BACKEND_REF: backend starter repo and branch to clone (defaults to medusa-starter-default@main)
+- BACKEND_REPO, BACKEND_REF: backend starter repo and branch to clone (defaults to medusa-starter-default@master)
 - BACKEND_INIT_CMD: fallback command template to initialize the backend when BACKEND_REPO is unset (default uses npx create-medusa-app@latest {dir})
 
 ## Run
