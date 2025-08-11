@@ -54,7 +54,8 @@ reset_dir "$STOREFRONT_DIR"
 
 git clone --depth 1 --branch "$STOREFRONT_REF" "$STOREFRONT_REPO" "$STOREFRONT_DIR"
 
-"$SCRIPT_DIR"/apply-patches.sh "$BACKEND_DIR" "$STOREFRONT_DIR"
+# Run patch script via bash to avoid relying on executable bit on CI runners
+bash "$SCRIPT_DIR/apply-patches.sh" "$BACKEND_DIR" "$STOREFRONT_DIR"
 
 # Ensure .env exists based on .env.template if present
 if [[ -f ".env.template" && ! -f ".env" ]]; then
