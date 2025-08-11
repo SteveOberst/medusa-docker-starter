@@ -53,8 +53,23 @@ What the bootstrap does
 - Creates .env from .env.template at the repo root if missing
 
 Important: generate a publishable API key
-- After bootstrapping, create at least one Region and Sales Channel in your Medusa backend.
-- Generate a Publishable API Key for that Sales Channel and set it in your .env as NEXT_PUBLIC_MEDUSA_PUBLISHABLE_KEY.
+- On first visit to http://localhost:8000 you will likely see: "Error: A valid publishable key is required to proceed with the request" — this is expected until you create and configure a key.
+- Create at least one Region and Sales Channel in your Medusa backend.
+- Create an admin user (if you don't have one yet) and sign in to the Admin to generate a key:
+
+	Windows PowerShell
+	```powershell
+	docker exec -it medusa_backend sh -lc "export NODE_ENV=production && npx medusa user --email admin@example.com --password 'test1234'"
+	```
+
+- In the Admin panel, generate a Publishable API Key for your Sales Channel, then set it in your `.env` as `NEXT_PUBLIC_MEDUSA_PUBLISHABLE_KEY`.
+- Apply the change by recreating containers:
+
+	Windows PowerShell
+	```powershell
+	docker compose up -d
+	```
+
 - Without this key, most dynamic storefront pages will return empty data.
 
 Key vars:
