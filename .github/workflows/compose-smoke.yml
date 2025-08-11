@@ -18,17 +18,31 @@ jobs:
       - name: Create .env for compose
         shell: bash
         run: |
-          cat > .env << 'EOF'
-          # CI defaults for Docker Compose
-          JWT_SECRET=supersecret
-          COOKIE_SECRET=supersecret
-          STORE_CORS=http://localhost:8000
-          ADMIN_CORS=http://localhost:9000,http://localhost:3000
-          AUTH_CORS=http://localhost:9000,http://localhost:3000
-          NODE_ENV=development
-          SEED_DB=false
-          NEXT_PUBLIC_MEDUSA_PUBLISHABLE_KEY=pk_test
-          EOF
+          printf "%s\n" \
+            "# CI defaults for Docker Compose" \
+            "JWT_SECRET=supersecret" \
+            "COOKIE_SECRET=supersecret" \
+            "STORE_CORS=http://localhost:8000" \
+            "ADMIN_CORS=http://localhost:9000,http://localhost:3000" \
+            "AUTH_CORS=http://localhost:9000,http://localhost:3000" \
+            "NODE_ENV=development" \
+            "SEED_DB=false" \
+            "NEXT_PUBLIC_MEDUSA_PUBLISHABLE_KEY=pk_test" \
+            "" \
+            "# Bootstrap defaults (explicit, though scripts have sane defaults)" \
+            "BACKEND_DIR=backend" \
+            "STOREFRONT_DIR=storefront" \
+            "BACKEND_REPO=https://github.com/medusajs/medusa-starter-default" \
+            "BACKEND_REF=master" \
+            "STOREFRONT_REPO=https://github.com/medusajs/nextjs-starter-medusa" \
+            "STOREFRONT_REF=main" \
+            "BACKEND_INIT_CMD=\"npx create-medusa-app@latest {dir}\"" \
+            > .env
+
+      - name: Bootstrap backend and storefront (clone + apply patches)
+        shell: bash
+        run: |
+          bash scripts/bootstrap.sh
 
       - name: Free 9000/8000 if taken
         shell: bash
