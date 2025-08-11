@@ -65,7 +65,7 @@ Key vars:
 
 Bootstrap configuration in .env (optional):
 - STOREFRONT_REPO: Git URL for the storefront to clone (defaults to Medusa starter)
-- STOREFRONT_REF: Branch/tag to checkout (defaults to master)
+- STOREFRONT_REF: Branch/tag to checkout (defaults to main)
 - BACKEND_DIR, STOREFRONT_DIR: target folders (default backend, storefront)
 
 ## Run

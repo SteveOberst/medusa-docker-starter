@@ -2,10 +2,15 @@ param(
   [string]$BackendDir = "backend",
   [string]$StorefrontDir = "storefront",
   [string]$StorefrontRepo = "https://github.com/medusajs/nextjs-starter-medusa",
-  [string]$StorefrontRef = "master"
+  [string]$StorefrontRef = "main"
 )
 
 $ErrorActionPreference = "Stop"
+
+# Ensure we run from repo root regardless of invocation path
+$ScriptDir = Split-Path -Path $MyInvocation.MyCommand.Path -Parent
+$RepoRoot = Resolve-Path (Join-Path $ScriptDir '..')
+Set-Location $RepoRoot
 
 # Load .env if present so users can configure without passing parameters
 if (Test-Path ".env" -PathType Leaf) {
