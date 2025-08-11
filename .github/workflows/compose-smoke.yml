@@ -36,7 +36,7 @@ jobs:
             "BACKEND_REF=master" \
             "STOREFRONT_REPO=https://github.com/medusajs/nextjs-starter-medusa" \
             "STOREFRONT_REF=main" \
-            "BACKEND_INIT_CMD=npx create-medusa-app@latest {dir}" \
+            "BACKEND_INIT_CMD=\"npx create-medusa-app@latest {dir}\"" \
             > .env
 
       - name: Bootstrap backend and storefront (clone + apply patches)
