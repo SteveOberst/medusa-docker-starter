@@ -122,6 +122,7 @@ Dependabot is kept for automated dependency checks.
 - Admin redirecting to medusa:9000: remove MEDUSA_BACKEND_URL from .env; the browser must use NEXT_PUBLIC_MEDUSA_BACKEND_URL (localhost). Internal networking is handled via MEDUSA_INTERNAL_BACKEND_URL in docker-compose.
 - Storefront empty data: add at least one Region and link it to a Sales Channel; set NEXT_PUBLIC_MEDUSA_PUBLISHABLE_KEY with access to that channel.
 - CI missing .env: the smoke workflow creates it automatically; if running manually, create .env first.
+- Backend init E404: If you see an npm 404 for @medusajs/create-medusa-app, use the unscoped package. The default BACKEND_INIT_CMD uses "npx create-medusa-app@latest {dir}".
 
 ## Repo layout notes
 - backend/ and storefront/ are initially empty; the bootstrap will populate them.

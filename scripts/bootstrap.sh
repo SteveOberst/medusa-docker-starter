@@ -28,7 +28,7 @@ reset_dir() {
 echo "Preparing backend directory: $BACKEND_DIR"
 # Initialize backend using Medusa create tool (configurable via BACKEND_INIT_CMD in .env)
 init_backend() {
-  local cmd_template=${BACKEND_INIT_CMD:-"npx @medusajs/create-medusa-app@latest {dir}"}
+  local cmd_template=${BACKEND_INIT_CMD:-"npx create-medusa-app@latest {dir}"}
   local cmd="$cmd_template"
   if [[ "$cmd" == *"{dir}"* ]]; then
     cmd="${cmd//\{dir\}/$BACKEND_DIR}"
