@@ -22,14 +22,12 @@ Copy-Item .env.template .env
 
 2) Bootstrap the apps to populate storefront/ and apply patches to both apps
 
-Windows PowerShell
-```powershell
-# default Medusa starter
-./scripts/bootstrap.ps1
+Windows (cmd)
+```bat
+:: default Medusa starter
+scripts\bootstrap.bat
 
-# custom storefront repo and branch/tag
-./scripts/bootstrap.ps1 -StorefrontRepo "https://github.com/your-org/your-nextjs-storefront" -StorefrontRef "main"
-# alternatively, set STOREFRONT_REPO/STOREFRONT_REF in .env and just run ./scripts/bootstrap.ps1
+:: configure via .env (STOREFRONT_REPO/STOREFRONT_REF, BACKEND_REPO/REF, dirs) and re-run
 ```
 
 macOS/Linux (Bash)
@@ -97,10 +95,10 @@ Open:
 - Storefront: http://localhost:8000
 
 ## Helper scripts (Windows/macOS/Linux)
-- Windows PowerShell
-	- ./docker-up.ps1 [-Rebuild]
-	- ./docker-down.ps1 [-Prune]
-	- ./docker-restart.ps1
+- Windows (cmd)
+	- docker-up.bat [--rebuild]
+	- docker-down.bat [--prune]
+	- docker-restart.bat
 - Bash
 	- ./docker-up.sh [--rebuild]
 	- ./docker-down.sh [--prune]
@@ -108,9 +106,9 @@ Open:
 
 Apply patches only (if you already have apps):
 
-- Windows
-```powershell
-./scripts/apply-patches.ps1
+- Windows (cmd)
+```bat
+scripts\apply-patches.bat
 ```
 
 - macOS/Linux
